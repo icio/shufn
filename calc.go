@@ -1,20 +1,21 @@
 package shufn
 
-// Calc determines the minimum mod and an appropriate mult for New or NewStart, given [min, max].
-func Calc(min, max, start uint64) (mult, mod, _min, _max, _start uint64) {
-	if max < min {
-		min, max = max, min
+// Calc determines the minimum mod and an appropriate mult for passing to New.
+func Calc(rangeMin, rangeMax, start uint64) (mult, mod, min, max, start uint64) {
+	if rangeMax < rangeMin {
+		rangeMin, rangeMax = rangeMax, rangeMin
 	}
 
-	primes := primesPast(max - min + 1)
+	primes := primesPast(rangeMax - rangeMin + 1)
 	if len(primes) == 0 {
-		return 1, 2, min, max, start
+		return 1, 2, rangeMin, rangeMax, start
 	}
 
 	mod = primes[len(primes)-1]
 	roots := primePrimitiveRoots(mod, primes)
 	mult = roots[len(roots)*2/3]
-	return mult, mod, min, max, start
+
+	return mult, mod, rangeMin, rangeMax, start
 }
 
 // primesPast returns all prime numbers up to the next prime above min.
