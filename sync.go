@@ -11,14 +11,19 @@ func Sync(i Iter) *syncIter {
 
 type syncIter struct {
 	Iter
-	mu sync.Mutex
+	mu   sync.Mutex
+	done bool
 }
 
 var _ Iter = (*syncIter)(nil)
 
 func (s *syncIter) Next() (v uint64, more bool) {
 	s.mu.Lock()
-	v, more = s.Iter.Next()
+	if s.done {
+		v, more = 0, false
+	} else {
+		v, more = s.Iter.Next()
+	}
 	s.mu.Unlock()
 	return
 }
