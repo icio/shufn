@@ -13,4 +13,7 @@
 // The shufn executable (go get github.com/icio/shufn/cmd/shufn) provides this
 // precomputation on the command-line. For example: `shufn -q 1000000` will
 // demonstrate multiple ways to use the shufn package.
+//
+// While it := shufn.New(...) is not thread-safe, shufn.Sync(it) is thread-safe
+// and implements the same interface.
 package shufn
