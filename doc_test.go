@@ -8,7 +8,7 @@ import (
 	"github.com/icio/shufn"
 )
 
-func ExampleSimple() {
+func ExampleNew() {
 	// it produces values in the range 0-100 inclusive. The start parameter is
 	// passed through to New verbatim. When New receives start=0 it replaces it
 	// with a random value.
@@ -27,7 +27,7 @@ func ExampleSimple() {
 	// 2
 }
 
-func ExampleParallel() {
+func ExampleNew_Parallel() {
 	work := make(chan int)
 	done := make(chan int)
 
