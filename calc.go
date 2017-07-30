@@ -1,7 +1,7 @@
 package shufn
 
 // Calc determines the minimum mod and an appropriate mult for passing to New.
-func Calc(rangeMin, rangeMax, start uint64) (mult, mod, min, max, start uint64) {
+func Calc(rangeMin, rangeMax, start uint64) (mult, mod, min, max, strt uint64) {
 	if rangeMax < rangeMin {
 		rangeMin, rangeMax = rangeMax, rangeMin
 	}
