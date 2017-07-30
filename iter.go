@@ -4,6 +4,8 @@ import (
 	"math/rand"
 )
 
+// Iter defines the common interface to thread-safe and -unsafe variants
+// of the iterator.
 type Iter interface {
 	Next() (i uint64, ok bool)
 
@@ -15,6 +17,7 @@ type Iter interface {
 	Max() uint64
 }
 
+// New creates a non-thread-safe iterator over the numeric range.
 func New(mult, mod, min, max, start uint64) *iter {
 	if start == 0 {
 		start = rand.Uint64() % (max - min)
