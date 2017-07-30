@@ -27,7 +27,7 @@ func ExampleNew() {
 	// 2
 }
 
-func ExampleNew_Parallel() {
+func ExampleNew_parallel() {
 	work := make(chan int)
 	done := make(chan int)
 
