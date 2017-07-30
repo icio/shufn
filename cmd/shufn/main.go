@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/icio/shufn"
+	"github.com/icio/shufn"
 )
 
 func main() {
@@ -51,14 +51,14 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	// Construct the iterator.
-	var it Iter
+	var it shufn.Iter
 	if mult == 0 || mod == 0 {
-		it = New(Calc(min, max, start))
+		it = shufn.New(shufn.Calc(min, max, start))
 	} else {
-		it = New(mult, mod, min, max, start)
+		it = shufn.New(mult, mod, min, max, start)
 	}
 	if *sync {
-		it = Sync(it)
+		it = shufn.Sync(it)
 	}
 
 	// Dump the iter config.
@@ -98,7 +98,7 @@ func usage(exitCode int, err error) {
 	os.Exit(exitCode)
 }
 
-func dump(w io.Writer, it Iter, sync bool) {
+func dump(w io.Writer, it shufn.Iter, sync bool) {
 	syncFix := func(s string) string { return s }
 	if sync {
 		syncFix = func(s string) string {
