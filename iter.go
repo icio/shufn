@@ -4,72 +4,59 @@ import (
 	"math/rand"
 )
 
-// Iter defines the common interface to thread-safe and -unsafe variants
-// of the iterator.
-type Iter interface {
-	Next() (i uint64, ok bool)
-
-	Mult() uint64
-	Mod() uint64
-	Start() uint64
-
-	Min() uint64
-	Max() uint64
-}
-
 // New creates a non-thread-safe iterator over the numeric range.
-func New(mult, mod, min, max, start uint64) *iter {
+func New(mult, mod, min, max, start uint64) *Iter {
 	if start == 0 {
-		start = rand.Uint64() % (max - min)
+		start = rand.Uint64()
 	}
 	start = start % (max - min)
 	if start == 0 {
 		start = 1
 	}
 
-	return &iter{
-		mult:  mult,
-		mod:   mod,
-		start: start,
-		min:   min,
-		max:   max,
+	return &Iter{
+		Mult:  mult,
+		Mod:   mod,
+		Start: start,
+		Min:   min,
+		Max:   max,
 	}
 }
 
-type iter struct {
-	mult  uint64
-	mod   uint64
-	start uint64
+type Iter struct {
+	Mult  uint64
+	Mod   uint64
+	Start uint64
 	i     uint64
-	max   uint64
-	min   uint64
+	I     uint64
+	Max   uint64
+	Min   uint64
 }
 
-var _ Iter = (*iter)(nil)
+// Next returns whether there are more numbers in the sequence; and indicates
+// the next is available on i.I. (Not thread safe!)
+func (i *Iter) Next() (more bool) {
+	i.I, more = i.NextI()
+	return
+}
 
-func (i *iter) Mod() uint64   { return i.mod }
-func (i *iter) Mult() uint64  { return i.mult }
-func (i *iter) Start() uint64 { return i.start }
-func (i *iter) Max() uint64   { return i.max }
-func (i *iter) Min() uint64   { return i.min }
-
-func (i *iter) Next() (v uint64, more bool) {
-	v, more = i.next()
-	for more && v > i.max {
-		v, more = i.next()
+func (i *Iter) NextI() (I uint64, more bool) {
+	I, more = i.next()
+	for more && I > i.Max {
+		I, more = i.next()
 	}
 	return
 }
 
-func (i *iter) next() (v uint64, more bool) {
+func (i *Iter) next() (I uint64, more bool) {
 	if i.i == 0 {
-		i.i = i.start
+		i.i = i.Start
 		more = true
 	} else {
-		i.i = (i.i * i.mult) % i.mod
-		more = i.i != i.start
+		i.i = (i.i * i.Mult) % i.Mod
+		more = i.i != i.Start
 	}
 
-	v = i.i + i.min - 1
+	I = i.i + i.Min - 1
 	return
 }
