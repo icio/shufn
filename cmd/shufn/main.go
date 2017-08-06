@@ -7,7 +7,6 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/icio/shufn"
@@ -15,7 +14,6 @@ import (
 
 func main() {
 	verbose := flag.Bool("v", false, "Print the iterator used to stderr.")
-	sync := flag.Bool("t", false, "Use a thread-safe iterator (doesn't change logic).")
 	quiet := flag.Bool("q", false, "Don't enumerate the iterator.")
 
 	// Parse flags.
@@ -51,30 +49,22 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	// Construct the iterator.
-	var it shufn.Iter
+	var it *shufn.Iter
 	if mult == 0 || mod == 0 {
 		it = shufn.New(shufn.Calc(min, max, start))
 	} else {
 		it = shufn.New(mult, mod, min, max, start)
 	}
-	if *sync {
-		it = shufn.Sync(it)
-	}
 
 	// Dump the iter config.
 	if *verbose || *quiet {
-		dump(os.Stderr, it, *sync)
+		dump(os.Stderr, it)
 	}
 
 	// Enumerate the range.
 	if !*quiet {
-		for {
-			i, ok := it.Next()
-			if !ok {
-				break
-			}
-
-			fmt.Println(i)
+		for it.Next() {
+			fmt.Println(it.I)
 		}
 	}
 }
@@ -94,25 +84,18 @@ func usage(exitCode int, err error) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 	}
-	fmt.Fprintln(os.Stderr, "Usage: shufn [-v|-q] [MIN [START]] MAX [MULT MOD]\n", os.Args[0])
+	fmt.Fprintln(os.Stderr, "Usage: shufn [-v|-q] [MIN [START]] MAX [MULT MOD]")
 	os.Exit(exitCode)
 }
 
-func dump(w io.Writer, it shufn.Iter, sync bool) {
-	syncFix := func(s string) string { return s }
-	if sync {
-		syncFix = func(s string) string {
-			return strings.Replace(strings.Replace(s, "\n", ")\n", 1), "= ", "= shufn.Sync(", 1)
-		}
-	}
-
-	mult, mod, min, max, start := it.Mult(), it.Mod(), it.Min(), it.Max(), it.Start()
+func dump(w io.Writer, it *shufn.Iter) {
+	mult, mod, min, max, start := it.Mult, it.Mod, it.Min, it.Max, it.Start
 	fmt.Fprintf(w, "// Iterate from %d to %d, inclusive.\n", min, max)
 	fmt.Fprintf(w, "// Repeat invocation: shufn %d %d %d\n", min, start, max)
 	fmt.Fprintf(w, "// Instant invocation: shufn %d %d %d %d %d\n", min, start, max, mult, mod)
 	fmt.Fprintf(w, "var iter        = %#v\n", it)
-	fmt.Fprintf(w, syncFix("var constructor = shufn.New(%d, %d, %d, %d, %d)\n"), mult, mod, min, max, start)
-	fmt.Fprintf(w, syncFix("var constrCalc  = shufn.New(shuf.Calc(%d, %d, %d))\n"), min, max, start)
-	fmt.Fprintf(w, syncFix("var randRotated = shufn.New(%d, %d, %d, %d, 0)\n"), mult, mod, min, max)
-	fmt.Fprintf(w, syncFix("var randRotCalc = shufn.New(shuf.Calc(%d, %d, 0))\n"), min, max)
+	fmt.Fprintf(w, "var constructor = shufn.New(%d, %d, %d, %d, %d)\n", mult, mod, min, max, start)
+	fmt.Fprintf(w, "var constrCalc  = shufn.New(shuf.Calc(%d, %d, %d))\n", min, max, start)
+	fmt.Fprintf(w, "var randRotated = shufn.New(%d, %d, %d, %d, 0)\n", mult, mod, min, max)
+	fmt.Fprintf(w, "var randRotCalc = shufn.New(shuf.Calc(%d, %d, 0))\n", min, max)
 }

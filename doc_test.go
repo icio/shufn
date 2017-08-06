@@ -8,6 +8,18 @@ import (
 	"github.com/icio/shufn"
 )
 
+func ExampleNew_simple() {
+	rand.Seed(0)
+	it := shufn.New(shufn.Calc(1, 3, 0))
+	for it.Next() {
+		fmt.Println(it.I)
+	}
+
+	// Output: 1
+	// 3
+	// 2
+}
+
 func ExampleNew() {
 	// it produces values in the range 0-100 inclusive. The start parameter is
 	// passed through to New verbatim. When New receives start=0 it replaces it
@@ -15,13 +27,14 @@ func ExampleNew() {
 	rand.Seed(0)
 	it := shufn.New(shufn.Calc(1, 3, 0))
 	for {
-		i, more := it.Next()
+		i, more := it.NextI()
 		if !more {
 			break
 		}
 
 		fmt.Println(i)
 	}
+
 	// Output: 1
 	// 3
 	// 2
