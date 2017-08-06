@@ -13,6 +13,8 @@ import (
 )
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
+
 	verbose := flag.Bool("v", false, "Print the iterator used to stderr.")
 	quiet := flag.Bool("q", false, "Don't enumerate the iterator.")
 
@@ -45,16 +47,13 @@ func main() {
 	mult := parseArg(args, multArg, 0)
 	mod := parseArg(args, modArg, 0)
 
-	// Seed the random value which will be used for the starting position.
-	rand.Seed(time.Now().UnixNano())
+	// Fill in the blanks.
+	if mult == 0 || mod == 0 {
+		mult, mod, min, max, start := shufn.Calc(min, max, start)
+	}
 
 	// Construct the iterator.
-	var it *shufn.Iter
-	if mult == 0 || mod == 0 {
-		it = shufn.New(shufn.Calc(min, max, start))
-	} else {
-		it = shufn.New(mult, mod, min, max, start)
-	}
+	it := shufn.New(mult, mod, min, max, start)
 
 	// Dump the iter config.
 	if *verbose || *quiet {
