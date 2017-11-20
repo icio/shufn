@@ -20,7 +20,7 @@ func ExampleIter() {
 	for iter.Next() {
 		fmt.Print(iter.I, " ")
 	}
-	// Output: 6 9 8 1 7 5 2 3 10 4
+	// Output: 3 10 4 6 9 8 1 7 5 2
 }
 
 // iter enumerates the integers in the range [1, 10], always in the same
@@ -43,7 +43,7 @@ func ExampleIter_resume() {
 
 	iter := MustIter(&Seq{
 		Min: 100, Max: 110,
-		Mult: 7, Mod: 11, Loop: 7,
+		Mult: 7, Mod: 11, Loop: 106,
 	})
 
 	// Resume from 10. We could alternatively have set Start on the Seq passed
