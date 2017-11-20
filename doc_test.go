@@ -8,8 +8,7 @@ import (
 	"time"
 )
 
-// iter enumerates the integers in the range [1, 10] pseudo-randomly
-// with no guarantees.
+// Here we produce all of the numbers 1-10 in a slightly random order.
 func ExampleIter() {
 	rand.Seed(0) // Ensure reproducible results in examples. Set to random.
 
@@ -23,8 +22,7 @@ func ExampleIter() {
 	// Output: 3 10 4 6 9 8 1 7 5 2
 }
 
-// iter enumerates the integers in the range [1, 10], always in the same
-// sequence. Mult, Mod and Loop are the only factors randomly set if zero.
+// By specifying Mult, Mod, and Loop we always get the same sequence!
 func ExampleIter_consistent() {
 	rand.Seed(time.Now().Unix())
 
@@ -38,6 +36,7 @@ func ExampleIter_consistent() {
 	// Output: 6 3 7 9 10 5 8 4 2 1
 }
 
+// To resume a consistent sequence, just set I before consuming.
 func ExampleIter_resume() {
 	rand.Seed(time.Now().Unix())
 
@@ -45,10 +44,7 @@ func ExampleIter_resume() {
 		Min: 100, Max: 110,
 		Mult: 7, Mod: 11, Loop: 106,
 	})
-
-	// Resume from 10. We could alternatively have set Start on the Seq passed
-	// to MustIter, prior to its invocation.
-	iter.I = 109
+	iter.I = 109 // Resume, starting from 109.
 
 	for iter.Next() {
 		fmt.Print(iter.I, " ")
