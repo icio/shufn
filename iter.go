@@ -59,11 +59,7 @@ func NewIter(s *Seq) (*Iter, error) {
 				s.Primes = primesPast(s.Max - s.Min + 1)
 			}
 			if s.Mod == 0 {
-				if s.Max-s.Min == 0 {
-					s.Mod = 1
-				} else {
-					s.Mod = s.Primes[len(s.Primes)-1]
-				}
+				s.Mod = s.Primes[len(s.Primes)-1]
 			}
 			if len(s.ModPrimRoots) == 0 {
 				s.ModPrimRoots = primePrimitiveRoots(s.Mod, s.Primes)
@@ -83,9 +79,6 @@ func NewIter(s *Seq) (*Iter, error) {
 			iter.Loop = iter.Min
 		} else {
 			iter.Loop = rand.Uint64()%(iter.Max-iter.Min+1) + iter.Min
-		}
-		if iter.Loop == 0 {
-			iter.Loop = 1
 		}
 	}
 
@@ -137,13 +130,4 @@ func (i *Iter) next() bool {
 	// i.I contains the previous value - lets find the next.
 	i.I = ((i.I-i.Min+1)*i.Mult)%i.Mod + i.Min - 1
 	return i.I != i.Loop
-}
-
-// Consume reads the remainder of iter into a []uint64.
-func Consume(iter *Iter) []uint64 {
-	s := make([]uint64, 0, iter.Max-iter.Min+1)
-	for iter.Next() {
-		s = append(s, iter.I)
-	}
-	return s
 }
