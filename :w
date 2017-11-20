@@ -43,15 +43,28 @@ func ExampleIter_resume() {
 
 	iter := MustIter(&Seq{
 		Min: 100, Max: 110,
-		Mult: 7, Mod: 11, Loop: 7,
+		Mult: 6, Mod: 11, Loop: 6,
 	})
 
-	// Resume from 10. We could alternatively have set Start on the Seq passed
-	// to MustIter, prior to its invocation.
+	// Resume from 10.
 	iter.I = 109
 
 	for iter.Next() {
 		fmt.Print(iter.I, " ")
 	}
-	// Output: 109 103 105 108 107 100
+	// Output: 10 5 8 4 2 1
+}
+
+func ExampleIter_resumeSeq() {
+	rand.Seed(time.Now().Unix())
+
+	iter := MustIter(&Seq{
+		Min: 1, Max: 10,
+		Mult: 6, Mod: 11, Loop: 6,
+		Start: 10,
+	})
+	for iter.Next() {
+		fmt.Print(iter.I, " ")
+	}
+	// Output: 10 5 8 4 2 1
 }

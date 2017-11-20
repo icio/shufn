@@ -1,25 +1,9 @@
 package shufn
 
-// Calc determines the minimum mod and an appropriate mult for passing to New.
-func Calc(rangeMin, rangeMax, start uint64) (mult, mod, min, max, strt uint64) {
-	if rangeMax < rangeMin {
-		rangeMin, rangeMax = rangeMax, rangeMin
-	}
-
-	primes := primesPast(rangeMax - rangeMin + 1)
-	if len(primes) == 0 {
-		return 1, 2, rangeMin, rangeMax, start
-	}
-
-	mod = primes[len(primes)-1]
-	roots := primePrimitiveRoots(mod, primes)
-	mult = roots[len(roots)*2/3]
-
-	return mult, mod, rangeMin, rangeMax, start
-}
+var primesPast = primesPast_append
 
 // primesPast returns all prime numbers up to the next prime above min.
-func primesPast(min uint64) (primes []uint64) {
+func primesPast_append(min uint64) (primes []uint64) {
 	if min < 2 {
 		return nil
 	}
@@ -33,6 +17,50 @@ Sieve:
 		primes = append(primes, p)
 		if p > min {
 			return
+		}
+	}
+}
+
+func primesPast_overalloc(min uint64) []uint64 {
+	if min < 2 {
+		return nil
+	}
+
+	primes := make([]uint64, 0, min/5+10)
+Sieve:
+	for p := uint64(2); ; p += 1 + (p & 1) {
+		for _, prime := range primes {
+			if p%prime == 0 {
+				continue Sieve
+			}
+		}
+		primes = append(primes, p)
+		if p > min {
+			return primes
+		}
+	}
+}
+
+func primesPast_alloczeroes(min uint64) []uint64 {
+	if min < 2 {
+		return nil
+	}
+
+	n, primes := 0, make([]uint64, min/5+10)
+Sieve:
+	for p := uint64(2); ; p += 1 + (p & 1) {
+		for _, prime := range primes {
+			if prime == 0 {
+				break
+			}
+			if p%prime == 0 {
+				continue Sieve
+			}
+		}
+		primes[n] = p
+		n++
+		if p > min {
+			return primes[:n]
 		}
 	}
 }

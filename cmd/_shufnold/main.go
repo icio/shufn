@@ -49,7 +49,7 @@ func main() {
 
 	// Fill in the blanks.
 	if mult == 0 || mod == 0 {
-		mult, mod, min, max, start = shufn.Calc(min, max, start)
+		mult, mod, min, max, start = shufn.NewRange(min, max).Start(start)
 	}
 
 	// Construct the iterator.
